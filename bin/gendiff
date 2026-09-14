@@ -1,0 +1,22 @@
+#!/usr/bin/env php
+<?php
+
+// Подключаем autoloader Composer — он автоматически загружает все зависимости
+require __DIR__ . '/../vendor/autoload.php';
+
+// Используем docopt для парсинга аргументов командной строки
+$usage = <<<'USAGE'
+Generate diff
+
+Usage:
+  gendiff (-h|--help)
+  gendiff (-v|--version)
+
+Options:
+  -h --help     Show this screen
+  -v --version  Show version
+USAGE;
+
+// Docopt::handle() принимает массив с ключом 'argv' для передачи аргументов
+// Это предотвращает предупреждения о динамических свойствах
+Docopt::handle($usage, ['argv' => $_SERVER['argv']]);

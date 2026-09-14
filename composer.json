@@ -1,0 +1,20 @@
+{
+    "name": "hexlet/code",
+    "description": "Gendiff CLI App",
+    "require-dev": {
+        "docopt/docopt": "^1.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Hexlet\\Code\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Stepan Kormilin",
+            "email": "ubscoder@gmail.com"
+        }
+    ],
+    "require": {}
+}
