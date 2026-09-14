@@ -1,0 +1,39 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+/.idea/
+.vscode/
+/.gigacode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# PHP
+/composer.lock
+/phpunit/phpunit
+/php-cs-fixer
+/.phpunit.result.cache
+/composer.phar
+
+# Build / dist
+/dist/
+/build/
+
+# Logs
+*.log
+/logs/
+
+# Temporary files
+/tmp/
+/temp/
