@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1789485432">
-  <project timestamp="1789485432" name="Clover Coverage">
+<coverage generated="1789487383">
+  <project timestamp="1789487383" name="Clover Coverage">
     <file name="/Users/teacat/Documents/PHP/php-project-48/src/Differ.php">
       <line num="8" type="stmt" count="6"/>
       <line num="9" type="stmt" count="6"/>
@@ -37,7 +37,7 @@
     <package name="Gendiff">
       <file name="/Users/teacat/Documents/PHP/php-project-48/src/Parser.php">
         <class name="Gendiff\Parser" namespace="Gendiff">
-          <metrics complexity="4" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="8" coveredstatements="7" elements="9" coveredelements="7"/>
+          <metrics complexity="7" methods="3" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="16" coveredstatements="10" elements="19" coveredelements="10"/>
         </class>
         <line num="9" type="method" name="parse" visibility="public" complexity="4" crap="4.03" count="6"/>
         <line num="11" type="stmt" count="6"/>
@@ -48,9 +48,19 @@
         <line num="17" type="stmt" count="6"/>
         <line num="18" type="stmt" count="6"/>
         <line num="19" type="stmt" count="6"/>
-        <metrics loc="23" ncloc="23" classes="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="8" coveredstatements="7" elements="9" coveredelements="7"/>
+        <line num="23" type="method" name="parseJson" visibility="private" complexity="2" crap="2.50" count="6"/>
+        <line num="25" type="stmt" count="6"/>
+        <line num="26" type="stmt" count="6"/>
+        <line num="27" type="stmt" count="0"/>
+        <line num="28" type="stmt" count="0"/>
+        <line num="29" type="stmt" count="0"/>
+        <line num="32" type="stmt" count="6"/>
+        <line num="35" type="method" name="parseYaml" visibility="private" complexity="1" crap="2" count="0"/>
+        <line num="37" type="stmt" count="0"/>
+        <line num="39" type="stmt" count="0"/>
+        <metrics loc="42" ncloc="42" classes="1" methods="3" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="16" coveredstatements="10" elements="19" coveredelements="10"/>
       </file>
     </package>
-    <metrics files="3" loc="78" ncloc="78" classes="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="30" coveredstatements="29" elements="31" coveredelements="29"/>
+    <metrics files="3" loc="97" ncloc="97" classes="1" methods="3" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="38" coveredstatements="32" elements="41" coveredelements="32"/>
   </project>
 </coverage>

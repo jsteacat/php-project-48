@@ -12,11 +12,30 @@ class Parser
         $extension = pathinfo($filePath, PATHINFO_EXTENSION);
 
         return match ($extension) {
-            'json' => json_decode($content, true),
-            'yaml', 'yml' => Yaml::parse($content),
+            'json' => self::parseJson($content),
+            'yaml', 'yml' => self::parseYaml($content),
             default => throw new \Gendiff\Exceptions\UnsupportedFileFormatException(
                 "Неподдерживаемый формат: {$extension}"
             ),
         };
+    }
+
+    private static function parseJson(string $content): array
+    {
+        $data = json_decode($content, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \InvalidArgumentException(
+                "Ошибка JSON: " . json_last_error_msg()
+            );
+        }
+
+        return $data;
+    }
+
+    private static function parseYaml(string $content): array
+    {
+        $data = Yaml::parse($content);
+
+        return $data ?? [];
     }
 }
