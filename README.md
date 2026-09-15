@@ -1,6 +1,7 @@
 # Вычислитель отличий (PHP)
 
 [![hexlet-check](https://github.com/jsteacat/php-project-48/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/jsteacat/php-project-48/actions)
+[![CI](https://github.com/jsteacat/php-project-48/actions/workflows/ci.yml/badge.svg)](https://github.com/jsteacat/php-project-48/actions/workflows/ci.yml)
 
 В этом проекте отрабатывается работа с коллекциями. Изучаются способы построения и обхода деревьев. Вы познакомитесь с разными форматами данных (json, yml), научитесь их парсить и формировать. Начнете писать тесты (PHPUnit) и освоите разработку через них. Познакомитесь с непрерывной интеграцией (CI) и элементами экстремального программирования (XP). Прокачаете ООП мышление.
 

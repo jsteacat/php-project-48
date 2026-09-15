@@ -1,0 +1,20 @@
+<?php
+
+$xml = simplexml_load_file('tests/coverage/clover.xml');
+$project = $xml->project[0];
+$metrics = (array)$project->metrics;
+$attrs = $metrics['@attributes'];
+
+$linesHit = (int)($attrs['coveredstatements'] ?? 0);
+$linesValid = (int)($attrs['statements'] ?? 0);
+
+$coverage = ($linesValid > 0) ? ($linesHit / $linesValid) * 100 : 0;
+
+$threshold = (float)($_ENV['COVERAGE_THRESHOLD'] ?? 80);
+
+if ($coverage < $threshold) {
+    echo sprintf("\nCoverage %0.1f%% is below threshold %d%%\n", $coverage, $threshold);
+    exit(1);
+}
+
+echo sprintf("\nCoverage %0.1f%% meets threshold %d%%\n", $coverage, $threshold);

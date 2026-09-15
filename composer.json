@@ -5,6 +5,7 @@
         "bin/gendiff"
     ],
     "require": {
+        "php": ">=8.4",
         "docopt/docopt": "^1.0",
         "symfony/yaml": "^8.1"
     },
@@ -22,5 +23,10 @@
             "name": "Stepan Kormilin",
             "email": "ubscoder@gmail.com"
         }
-    ]
+    ],
+    "require-dev": {
+        "phpstan/phpstan": "^2.2",
+        "squizlabs/php_codesniffer": "^4.0",
+        "phpunit/phpunit": "^13.3"
+    }
 }
