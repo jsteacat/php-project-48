@@ -13,6 +13,9 @@ class GenDiffTest extends TestCase
     protected function setUp(): void
     {
         $this->fixturesDir = __DIR__ . '/fixtures';
+        if (!is_dir($this->fixturesDir)) {
+            mkdir($this->fixturesDir, 0777, true);
+        }
     }
 
     public function testIdenticalFiles(): void

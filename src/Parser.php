@@ -9,6 +9,12 @@ class Parser
     public static function parse(string $filePath): array
     {
         $content = file_get_contents($filePath);
+        if ($content === false) {
+            throw new \InvalidArgumentException(
+                "Не удалось прочитать файл: {$filePath}"
+            );
+        }
+
         $extension = pathinfo($filePath, PATHINFO_EXTENSION);
 
         return match ($extension) {
@@ -22,10 +28,14 @@ class Parser
 
     private static function parseJson(string $content): array
     {
+        if ($content === '') {
+            throw new \InvalidArgumentException('Содержимое файла пусто');
+        }
+
         $data = json_decode($content, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new \InvalidArgumentException(
-                "Ошибка JSON: " . json_last_error_msg()
+                'Ошибка JSON: ' . json_last_error_msg()
             );
         }
 
