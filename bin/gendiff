@@ -24,4 +24,14 @@ Options:
   --format <fmt>    Report format [default: stylish]
 DOC;
 
-Docopt::handle($doc, ['version' => '1.0.0']);
+$data = get_object_vars(Docopt::handle($doc, ['version' => '1.0.0']))['args'];
+
+$format = $data['--format'];
+$firstFilePath = $data['<firstFile>'];
+$secondFilePath = $data['<secondFile>'];
+
+$firstParsed = Gendiff\Parser::parse($firstFilePath);
+$secondParsed = Gendiff\Parser::parse($secondFilePath);
+
+print_r($firstParsed);
+print_r($secondParsed);

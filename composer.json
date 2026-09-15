@@ -5,12 +5,13 @@
         "bin/gendiff"
     ],
     "require": {
-        "docopt/docopt": "^1.0"
+        "docopt/docopt": "^1.0",
+        "symfony/yaml": "^8.1"
     },
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Hexlet\\Code\\": "src/"
+            "Gendiff\\": "src/"
         }
     },
     "authors": [
