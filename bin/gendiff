@@ -30,8 +30,4 @@ $format = $data['--format'];
 $firstFilePath = $data['<firstFile>'];
 $secondFilePath = $data['<secondFile>'];
 
-$firstParsed = Gendiff\Parser::parse($firstFilePath);
-$secondParsed = Gendiff\Parser::parse($secondFilePath);
-
-print_r($firstParsed);
-print_r($secondParsed);
+echo Gendiff\genDiff($firstFilePath, $secondFilePath) . "\n";

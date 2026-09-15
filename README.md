@@ -22,7 +22,37 @@ cd php-project-48
 
 ## Использование
 
-<!-- Добавьте примеры запуска и запись asciinema — именно это смотрит работодатель -->
+### CLI
+
+```bash
+# Сравнение двух JSON-файлов
+./bin/gendiff tests/fixtures/file1.json tests/fixtures/file2.json
+
+# Сравнение двух YAML-файлов
+./bin/gendiff tests/fixtures/file1.yaml tests/fixtures/file2.yml
+```
+
+Пример вывода:
+
+```
+{
+  - follow: false
+  host: hexlet.io
+  - proxy: 123.234.53.22
+  - timeout: 50
+  + timeout: 20
+  + verbose: true
+}
+```
+
+### Как библиотека
+
+```php
+use function Gendiff\genDiff;
+
+$diff = genDiff('path/to/file1.json', 'path/to/file2.json');
+echo $diff;
+```
 
 ---
 

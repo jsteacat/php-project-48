@@ -12,7 +12,10 @@
     "autoload": {
         "psr-4": {
             "Gendiff\\": "src/"
-        }
+        },
+        "files": [
+            "src/Differ.php"
+        ]
     },
     "authors": [
         {
