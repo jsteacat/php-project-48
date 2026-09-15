@@ -1,7 +1,10 @@
 {
     "name": "hexlet/code",
     "description": "Gendiff CLI App",
-    "require-dev": {
+    "bin": [
+        "bin/gendiff"
+    ],
+    "require": {
         "docopt/docopt": "^1.0"
     },
     "license": "MIT",
@@ -15,6 +18,5 @@
             "name": "Stepan Kormilin",
             "email": "ubscoder@gmail.com"
         }
-    ],
-    "require": {}
+    ]
 }
