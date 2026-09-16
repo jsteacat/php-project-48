@@ -7,12 +7,17 @@ function stringify(mixed $value): string
     return match (true) {
         is_bool($value) => $value ? 'true' : 'false',
         is_null($value) => 'null',
+        is_array($value) => throw new \InvalidArgumentException(
+            'Массивы не поддерживаются: используйте рекурсивное сравнение'
+        ),
         default => (string) $value,
     };
 }
 
-function genDiff(string $firstFilePath, string $secondFilePath): string
+function genDiff(string $firstFilePath, string $secondFilePath, string $format = 'stylish'): string
 {
+    // Тут потом сделать проверку на формат
+
     $firstData = Parser::parse($firstFilePath);
     $secondData = Parser::parse($secondFilePath);
 

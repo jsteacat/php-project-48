@@ -15,9 +15,4 @@
             <directory suffix=".php">src</directory>
         </include>
     </source>
-    <coverage>
-        <report>
-            <clover outputFile="tests/coverage/clover.xml"/>
-        </report>
-    </coverage>
 </phpunit>

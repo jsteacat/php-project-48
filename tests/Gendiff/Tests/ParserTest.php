@@ -59,7 +59,7 @@ class ParserTest extends TestCase
         file_put_contents($this->tempDir . '/test.txt', 'some content');
 
         $this->expectException(UnsupportedFileFormatException::class);
-        $this->expectExceptionMessage('Неподдерживаемый формат: txt');
+        $this->expectExceptionMessageMatches('/Неподдерживаемый формат файла:/');
 
         Parser::parse($this->tempDir . '/test.txt');
     }
@@ -67,7 +67,7 @@ class ParserTest extends TestCase
     public function testParseNonExistentFile(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Не удалось прочитать файл:');
+        $this->expectExceptionMessageMatches('/Файл не найден или недоступен:/');
 
         Parser::parse($this->tempDir . '/nonexistent.json');
     }
@@ -77,7 +77,7 @@ class ParserTest extends TestCase
         file_put_contents($this->tempDir . '/empty.json', '');
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Содержимое файла пусто');
+        $this->expectExceptionMessageMatches('/Пустой файл:/');
 
         Parser::parse($this->tempDir . '/empty.json');
     }
@@ -87,7 +87,7 @@ class ParserTest extends TestCase
         file_put_contents($this->tempDir . '/invalid.json', '{invalid json}');
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageMatches('/Ошибка JSON:/');
+        $this->expectExceptionMessageMatches('/Ошибка JSON в файле/');
 
         Parser::parse($this->tempDir . '/invalid.json');
     }
@@ -150,5 +150,75 @@ class ParserTest extends TestCase
         $result = Parser::parse($this->tempDir . '/multi.yaml');
 
         $this->assertEquals(['key1' => 'value1', 'key2' => 'value2', 'key3' => 'value3'], $result);
+    }
+
+    public function testParseJsonScalarValue(): void
+    {
+        file_put_contents($this->tempDir . '/scalar.json', '42');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches('/Ожидается объект или массив JSON/');
+
+        Parser::parse($this->tempDir . '/scalar.json');
+    }
+
+    public function testParseJsonNullValue(): void
+    {
+        file_put_contents($this->tempDir . '/null.json', 'null');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches('/Ожидается объект или массив JSON/');
+
+        Parser::parse($this->tempDir . '/null.json');
+    }
+
+    public function testParseJsonString(): void
+    {
+        file_put_contents($this->tempDir . '/string.json', '"hello"');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches('/Ожидается объект или массив JSON/');
+
+        Parser::parse($this->tempDir . '/string.json');
+    }
+
+    public function testParseJsonBoolean(): void
+    {
+        file_put_contents($this->tempDir . '/bool.json', 'true');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches('/Ожидается объект или массив JSON/');
+
+        Parser::parse($this->tempDir . '/bool.json');
+    }
+
+    public function testParseJsonArray(): void
+    {
+        $jsonContent = json_encode([1, 2, 3]);
+        file_put_contents($this->tempDir . '/array.json', $jsonContent);
+
+        $result = Parser::parse($this->tempDir . '/array.json');
+
+        $this->assertEquals([1, 2, 3], $result);
+    }
+
+    public function testParseYamlScalarValue(): void
+    {
+        file_put_contents($this->tempDir . '/scalar.yaml', 'just a string');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches('/Ожидается объект или массив YAML/');
+
+        Parser::parse($this->tempDir . '/scalar.yaml');
+    }
+
+    public function testParseInvalidYaml(): void
+    {
+        file_put_contents($this->tempDir . '/invalid.yaml', "key: [invalid\n  yaml: {structure");
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches('/Ошибка YAML в файле/');
+
+        Parser::parse($this->tempDir . '/invalid.yaml');
     }
 }

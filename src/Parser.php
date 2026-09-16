@@ -2,50 +2,69 @@
 
 namespace Gendiff;
 
+use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
 class Parser
 {
     public static function parse(string $filePath): array
     {
-        $content = file_get_contents($filePath);
-        if ($content === false) {
+        if (!is_file($filePath) || !is_readable($filePath)) {
             throw new \InvalidArgumentException(
-                "Не удалось прочитать файл: {$filePath}"
+                "Файл не найден или недоступен: {$filePath}"
             );
         }
 
+        $content = file_get_contents($filePath);
         $extension = pathinfo($filePath, PATHINFO_EXTENSION);
 
         return match ($extension) {
-            'json' => self::parseJson($content),
-            'yaml', 'yml' => self::parseYaml($content),
+            'json' => self::parseJson($content, $filePath),
+            'yaml', 'yml' => self::parseYaml($content, $filePath),
             default => throw new \Gendiff\Exceptions\UnsupportedFileFormatException(
-                "Неподдерживаемый формат: {$extension}"
+                "Неподдерживаемый формат файла: {$filePath}"
             ),
         };
     }
 
-    private static function parseJson(string $content): array
+    private static function parseJson(string $content, string $filePath): array
     {
         if ($content === '') {
-            throw new \InvalidArgumentException('Содержимое файла пусто');
+            throw new \InvalidArgumentException("Пустой файл: {$filePath}");
         }
 
         $data = json_decode($content, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new \InvalidArgumentException(
-                'Ошибка JSON: ' . json_last_error_msg()
+                "Ошибка JSON в файле {$filePath}: " . json_last_error_msg()
+            );
+        }
+
+        if (!is_array($data)) {
+            throw new \InvalidArgumentException(
+                "Ожидается объект или массив JSON в файле {$filePath}, получен: " . get_debug_type($data)
             );
         }
 
         return $data;
     }
 
-    private static function parseYaml(string $content): array
+    private static function parseYaml(string $content, string $filePath): array
     {
-        $data = Yaml::parse($content);
+        try {
+            $data = Yaml::parse($content);
+        } catch (ParseException $e) {
+            throw new \InvalidArgumentException(
+                "Ошибка YAML в файле {$filePath}: " . $e->getMessage()
+            );
+        }
 
-        return $data ?? [];
+        if (!is_array($data)) {
+            throw new \InvalidArgumentException(
+                "Ожидается объект или массив YAML в файле {$filePath}, получен: " . get_debug_type($data)
+            );
+        }
+
+        return $data;
     }
 }

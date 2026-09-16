@@ -1,3 +1,5 @@
+COVERAGE_THRESHOLD ?= 80
+
 install:
 	composer install
 
@@ -11,4 +13,4 @@ test:
 test-coverage:
 	mkdir -p tests/coverage
 	XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover=tests/coverage/clover.xml --testdox
-	php bin/check-coverage.php
+	COVERAGE_THRESHOLD=$(COVERAGE_THRESHOLD) php bin/check-coverage

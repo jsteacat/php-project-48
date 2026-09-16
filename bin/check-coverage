@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 
 $xml = simplexml_load_file('tests/coverage/clover.xml');
@@ -10,7 +11,7 @@ $linesValid = (int)($attrs['statements'] ?? 0);
 
 $coverage = ($linesValid > 0) ? ($linesHit / $linesValid) * 100 : 0;
 
-$threshold = (float)($_ENV['COVERAGE_THRESHOLD'] ?? 80);
+$threshold = (float)(getenv('COVERAGE_THRESHOLD') ?: 80);
 
 if ($coverage < $threshold) {
     echo sprintf("\nCoverage %0.1f%% is below threshold %d%%\n", $coverage, $threshold);

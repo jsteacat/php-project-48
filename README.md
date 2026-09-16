@@ -10,15 +10,22 @@
 
 ## Стек
 
-- PHP
+- PHP >= 8.4
+- [docopt/docopt](https://github.com/docopt/docopt.php) — разбор аргументов командной строки
+- [symfony/yaml](https://symfony.com/doc/current/components/yaml.html) — разбор YAML
+- PHPUnit, PHPStan, PHP_CodeSniffer (PSR-12) — только для разработки
+
+## Требования
+
+- PHP 8.4 или новее
+- Composer
 
 ## Установка
-
-<!-- Опишите установку: клонирование, зависимости, переменные окружения -->
 
 ```bash
 git clone https://github.com/jsteacat/php-project-48.git
 cd php-project-48
+composer install
 ```
 
 ## Использование
@@ -33,6 +40,16 @@ cd php-project-48
 ./bin/gendiff tests/fixtures/file1.yaml tests/fixtures/file2.yml
 ```
 
+Опции:
+
+| Опция                      | Описание                                              |
+|----------------------------|-------------------------------------------------------|
+| `-h`, `--help`             | Показать справку                                      |
+| `-v`, `--version`          | Показать версию                                       |
+| `-f <fmt>`, `--format <fmt>` | Формат вывода, по умолчанию `stylish`               |
+
+Поддерживаются файлы в форматах `.json`, `.yaml` и `.yml`. Из форматов вывода пока реализован только `stylish`.
+
 Пример вывода:
 
 ```
@@ -46,13 +63,31 @@ cd php-project-48
 }
 ```
 
+Если файл не найден, его формат не поддерживается или содержимое повреждено, сообщение об ошибке выводится в поток ошибок (`stderr`), а код возврата процесса равен `1`.
+
 ### Как библиотека
 
 ```php
 use function Gendiff\genDiff;
 
+// третий аргумент — формат вывода, по умолчанию stylish
 $diff = genDiff('path/to/file1.json', 'path/to/file2.json');
 echo $diff;
+```
+
+## Разработка
+
+```bash
+make install        # установка зависимостей (composer install)
+make lint           # проверка стиля (phpcs, PSR-12) и статический анализ (phpstan)
+make test           # запуск тестов PHPUnit
+make test-coverage  # тесты с расчётом покрытия и проверкой порога
+```
+
+Порог покрытия по умолчанию — 80%, его можно переопределить:
+
+```bash
+COVERAGE_THRESHOLD=90 make test-coverage
 ```
 
 ---

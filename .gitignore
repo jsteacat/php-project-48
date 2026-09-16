@@ -20,7 +20,6 @@
 Thumbs.db
 
 # PHP
-/composer.lock
 /phpunit/phpunit
 /php-cs-fixer
 /.phpunit.result.cache
@@ -29,6 +28,9 @@ Thumbs.db
 # Build / dist
 /dist/
 /build/
+
+# Coverage
+/tests/coverage/
 
 # Logs
 *.log
