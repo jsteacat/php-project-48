@@ -2,26 +2,14 @@
 
 namespace Gendiff\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Gendiff\Runner;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 
 class RunnerTest extends TestCase
 {
-    private string $tempDir;
-
-    protected function setUp(): void
-    {
-        $this->tempDir = sys_get_temp_dir() . '/gendiff_runner_test_' . uniqid();
-        mkdir($this->tempDir, 0777, true);
-    }
-
-    protected function tearDown(): void
-    {
-        foreach (glob($this->tempDir . '/*') as $file) {
-            unlink($file);
-        }
-        rmdir($this->tempDir);
-    }
+    private const FIXTURES_DIR = __DIR__ . '/../../fixtures';
+    private const EXPECTED_DIFF = self::FIXTURES_DIR . '/expected/stylish.txt';
 
     /**
      * Запускает Runner в текущем процессе, подменяя потоки вывода на in-memory.
@@ -53,35 +41,74 @@ class RunnerTest extends TestCase
         return (string) stream_get_contents($stream);
     }
 
-    /**
-     * @return string[] пути к созданным файлам
-     */
-    private function createJsonFixtures(string $first, string $second): array
+    private function expectedDiff(): string
     {
-        file_put_contents($this->tempDir . '/file1.json', $first);
-        file_put_contents($this->tempDir . '/file2.json', $second);
-
-        return [$this->tempDir . '/file1.json', $this->tempDir . '/file2.json'];
+        return (string) file_get_contents(self::EXPECTED_DIFF);
     }
 
-    public function testValidFiles(): void
+    #[DataProvider('flatFilesProvider')]
+    public function testDiffOfFlatFiles(string $first, string $second): void
     {
-        $files = $this->createJsonFixtures('{"a": 1, "b": 2}', '{"a": 1, "b": 3}');
-
-        [$stdout, $stderr, $exitCode] = $this->execute($files);
-
-        $expected = <<<OUTPUT
-{
-  a: 1
-  - b: 2
-  + b: 3
-}
-
-OUTPUT;
+        [$stdout, $stderr, $exitCode] = $this->execute([
+            self::FIXTURES_DIR . '/' . $first,
+            self::FIXTURES_DIR . '/' . $second,
+        ]);
 
         $this->assertSame(0, $exitCode);
-        $this->assertSame($expected, $stdout);
+        $this->assertSame($this->expectedDiff(), $stdout);
         $this->assertSame('', $stderr);
+    }
+
+    /**
+     * @return array<string, array{0: string, 1: string}>
+     */
+    public static function flatFilesProvider(): array
+    {
+        return [
+            'json' => ['file1.json', 'file2.json'],
+            'yaml' => ['file1.yaml', 'file2.yml'],
+        ];
+    }
+
+    /**
+     * @param string[] $option
+     */
+    #[DataProvider('formatOptionProvider')]
+    public function testFormatOption(array $option): void
+    {
+        [$stdout, $stderr, $exitCode] = $this->execute(array_merge($option, [
+            self::FIXTURES_DIR . '/file1.json',
+            self::FIXTURES_DIR . '/file2.json',
+        ]));
+
+        $this->assertSame(0, $exitCode);
+        $this->assertSame($this->expectedDiff(), $stdout);
+        $this->assertSame('', $stderr);
+    }
+
+    /**
+     * @return array<string, array{0: string[]}>
+     */
+    public static function formatOptionProvider(): array
+    {
+        return [
+            'short' => [['-f', 'stylish']],
+            'long' => [['--format', 'stylish']],
+        ];
+    }
+
+    public function testUnknownOutputFormat(): void
+    {
+        [$stdout, $stderr, $exitCode] = $this->execute([
+            '-f',
+            'unknown',
+            self::FIXTURES_DIR . '/file1.json',
+            self::FIXTURES_DIR . '/file2.json',
+        ]);
+
+        $this->assertSame(1, $exitCode);
+        $this->assertSame('', $stdout);
+        $this->assertStringContainsString('Неподдерживаемый формат вывода: unknown', $stderr);
     }
 
     public function testHelp(): void
@@ -108,64 +135,33 @@ OUTPUT;
         [$stdout, $stderr, $exitCode] = $this->execute([]);
 
         $this->assertSame(1, $exitCode);
+        $this->assertSame('', $stdout);
         $this->assertStringContainsString('Usage:', $stderr);
     }
 
-    public function testFormatShortOption(): void
+    #[DataProvider('brokenFilesProvider')]
+    public function testBrokenFiles(string $fileName, string $expectedError): void
     {
-        $files = $this->createJsonFixtures('{"a": 1}', '{"a": 2}');
+        $path = self::FIXTURES_DIR . '/' . $fileName;
 
-        [$stdout, $stderr, $exitCode] = $this->execute(array_merge(['-f', 'stylish'], $files));
-
-        $this->assertSame(0, $exitCode);
-        $this->assertStringContainsString('- a: 1', $stdout);
-        $this->assertStringContainsString('+ a: 2', $stdout);
-        $this->assertSame('', $stderr);
-    }
-
-    public function testFormatLongOption(): void
-    {
-        $files = $this->createJsonFixtures('{"a": 1}', '{"a": 2}');
-
-        [$stdout, $stderr, $exitCode] = $this->execute(array_merge(['--format', 'stylish'], $files));
-
-        $this->assertSame(0, $exitCode);
-        $this->assertStringContainsString('- a: 1', $stdout);
-        $this->assertStringContainsString('+ a: 2', $stdout);
-        $this->assertSame('', $stderr);
-    }
-
-    public function testNonExistentFile(): void
-    {
-        [$stdout, $stderr, $exitCode] = $this->execute(['/nonexistent/file1.json', '/nonexistent/file2.json']);
+        [$stdout, $stderr, $exitCode] = $this->execute([$path, $path]);
 
         $this->assertSame(1, $exitCode);
         $this->assertSame('', $stdout);
-        $this->assertStringContainsString('Файл не найден или недоступен', $stderr);
+        $this->assertStringContainsString($expectedError, $stderr);
     }
 
-    public function testUnsupportedFormat(): void
+    /**
+     * @return array<string, array{0: string, 1: string}>
+     */
+    public static function brokenFilesProvider(): array
     {
-        file_put_contents($this->tempDir . '/file.txt', 'some content');
-
-        [$stdout, $stderr, $exitCode] = $this->execute([
-            $this->tempDir . '/file.txt',
-            $this->tempDir . '/file.txt',
-        ]);
-
-        $this->assertSame(1, $exitCode);
-        $this->assertSame('', $stdout);
-        $this->assertStringContainsString('Неподдерживаемый формат файла', $stderr);
-    }
-
-    public function testInvalidJson(): void
-    {
-        $files = $this->createJsonFixtures('{invalid json}', '{"a": 1}');
-
-        [$stdout, $stderr, $exitCode] = $this->execute($files);
-
-        $this->assertSame(1, $exitCode);
-        $this->assertSame('', $stdout);
-        $this->assertStringContainsString('Ошибка JSON в файле', $stderr);
+        return [
+            'unsupported format' => ['unsupported.txt', 'Неподдерживаемый формат файла'],
+            'invalid json' => ['invalid.json', 'Ошибка JSON в файле'],
+            'invalid yaml' => ['invalid.yaml', 'Ошибка YAML в файле'],
+            'empty file' => ['empty.json', 'Пустой файл'],
+            'missing file' => ['missing.json', 'Файл не найден или недоступен'],
+        ];
     }
 }

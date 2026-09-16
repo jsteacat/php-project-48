@@ -1,0 +1,8 @@
+{
+  "int": 42,
+  "float": 3.14,
+  "negative": -10,
+  "enabled": true,
+  "disabled": false,
+  "nothing": null
+}

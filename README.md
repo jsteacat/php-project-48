@@ -48,7 +48,7 @@ composer install
 | `-v`, `--version`          | Показать версию                                       |
 | `-f <fmt>`, `--format <fmt>` | Формат вывода, по умолчанию `stylish`               |
 
-Поддерживаются файлы в форматах `.json`, `.yaml` и `.yml`. Из форматов вывода пока реализован только `stylish`.
+Поддерживаются файлы в форматах `.json`, `.yaml` и `.yml`. Из форматов вывода пока реализован только `stylish`: неизвестный формат — это ошибка с кодом возврата `1`.
 
 Пример вывода:
 
@@ -75,20 +75,42 @@ $diff = genDiff('path/to/file1.json', 'path/to/file2.json');
 echo $diff;
 ```
 
+## Структура проекта
+
+```
+bin/gendiff           — CLI-входная точка
+src/functions.php     — публичное API: genDiff(), сборка diff, выбор форматтера
+src/Constants.php     — форматы вывода, поддерживаемые расширения, типы узлов diff
+src/Parser.php        — чтение json / yaml / yml
+src/Runner.php        — разбор аргументов и вывод результата
+src/Formatters/       — форматы вывода: каждый вариант — отдельный класс
+src/Exceptions/       — исключения проекта
+tests/                — PHPUnit-тесты, tests/fixtures — фикстуры
+```
+
+Сравнение и вывод разделены: `buildDiff()` собирает различия в промежуточное представление,
+а форматтер превращает их в текст. Чтобы добавить формат (`plain`, `json`), достаточно
+нового класса в `src/Formatters` и ветки в `createFormatter()`.
+
 ## Разработка
 
 ```bash
 make install        # установка зависимостей (composer install)
+make validate       # проверка composer.json (composer validate)
 make lint           # проверка стиля (phpcs, PSR-12) и статический анализ (phpstan)
 make test           # запуск тестов PHPUnit
-make test-coverage  # тесты с расчётом покрытия и проверкой порога
+make test-coverage  # тесты с расчётом покрытия и проверкой порога COVERAGE_MIN
 ```
 
-Порог покрытия по умолчанию — 80%, его можно переопределить:
+Порог покрытия задаётся переменной `COVERAGE_MIN` в `Makefile` (по умолчанию 80%), его можно переопределить:
 
 ```bash
-COVERAGE_THRESHOLD=90 make test-coverage
+COVERAGE_MIN=90 make test-coverage
 ```
+
+Отчёт о покрытии сохраняется в `build/logs/clover.xml`. Для подсчёта нужен Xdebug или PCOV. Вспомогательные файлы тестов (фикстуры) лежат в `tests/fixtures`.
+
+На каждый push и pull request в `main` запускается [воркфлоу CI](.github/workflows/ci.yml): установка зависимостей, линтер и тесты с проверкой порога покрытия.
 
 ---
 

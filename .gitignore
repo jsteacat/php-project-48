@@ -1,15 +1,9 @@
-# Dependencies
+# Зависимости
 /vendor/
-/node_modules/
-
-# Environment files
-.env
-.env.local
-.env.*.local
 
 # IDE
 /.idea/
-.vscode/
+/.vscode/
 /.gigacode/
 *.swp
 *.swo
@@ -20,23 +14,8 @@
 Thumbs.db
 
 # PHP
-/phpunit/phpunit
-/php-cs-fixer
-/.phpunit.result.cache
-/composer.phar
-
-# Build / dist
-/dist/
-/build/
-
-# Coverage
-/tests/coverage/
-
-# Logs
-*.log
-/logs/
-
-# Temporary files
-/tmp/
-/temp/
 /.phpunit.cache/
+composer.phar
+
+# Отчёты и кэш сборки (в том числе clover.xml)
+/build/

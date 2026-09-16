@@ -2,52 +2,52 @@
 
 namespace Gendiff\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 use function Gendiff\genDiff;
 
+/**
+ * Тесты публичного API библиотеки: функция genDiff сравнивает плоские файлы.
+ */
 class GenDiffTest extends TestCase
 {
-    private string $fixturesDir;
+    private const FIXTURES_DIR = __DIR__ . '/../../fixtures';
 
-    protected function setUp(): void
+    #[DataProvider('flatFilesProvider')]
+    public function testComparisonOfFlatFiles(string $first, string $second): void
     {
-        $this->fixturesDir = __DIR__ . '/../../fixtures';
+        $this->assertSame($this->expectedStylish(), genDiff(
+            self::FIXTURES_DIR . '/' . $first,
+            self::FIXTURES_DIR . '/' . $second
+        ));
     }
 
-    public function testJsonFiles(): void
+    /**
+     * @return array<string, array{0: string, 1: string}>
+     */
+    public static function flatFilesProvider(): array
     {
-        $result = genDiff($this->fixturesDir . '/file1.json', $this->fixturesDir . '/file2.json');
-
-        $expected = <<<OUTPUT
-{
-  - follow: false
-  host: hexlet.io
-  - proxy: 123.234.53.22
-  - timeout: 50
-  + timeout: 20
-  + verbose: true
-}
-OUTPUT;
-
-        $this->assertSame($expected, $result);
+        return [
+            'json' => ['file1.json', 'file2.json'],
+            'yaml' => ['file1.yaml', 'file2.yml'],
+        ];
     }
 
-    public function testYamlFiles(): void
+    public function testExplicitStylishFormat(): void
     {
-        $result = genDiff($this->fixturesDir . '/file1.yaml', $this->fixturesDir . '/file2.yml');
+        $this->assertSame($this->expectedStylish(), genDiff(
+            self::FIXTURES_DIR . '/file1.json',
+            self::FIXTURES_DIR . '/file2.json',
+            'stylish'
+        ));
+    }
 
-        $expected = <<<OUTPUT
-{
-  - follow: false
-  host: hexlet.io
-  - proxy: 123.234.53.22
-  - timeout: 50
-  + timeout: 20
-  + verbose: true
-}
-OUTPUT;
-
-        $this->assertSame($expected, $result);
+    /**
+     * Ожидаемый вывод хранится в фикстуре, чтобы не дублировать его в тестах.
+     */
+    private function expectedStylish(): string
+    {
+        return rtrim((string) file_get_contents(self::FIXTURES_DIR . '/expected/stylish.txt'));
     }
 }

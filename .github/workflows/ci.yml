@@ -20,14 +20,12 @@ jobs:
           extensions: xdebug
           coverage: xdebug
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+      - name: Install
+        run: make install
 
-      - name: Run linter (phpcs + phpstan)
+      - name: Run linter
         run: make lint
 
-      - name: Run tests
-        run: vendor/bin/phpunit --testdox
-
-      - name: Check coverage threshold
+      # make test-coverage падает, если покрытие ниже COVERAGE_MIN из Makefile
+      - name: Run tests with coverage check
         run: make test-coverage

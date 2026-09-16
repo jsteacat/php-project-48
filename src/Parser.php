@@ -2,11 +2,15 @@
 
 namespace Gendiff;
 
+use Gendiff\Constants;
+use Gendiff\Exceptions\UnsupportedFileFormatException;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
 class Parser
 {
+    private const JSON_EXTENSION = 'json';
+
     public static function parse(string $filePath): array
     {
         if (!is_file($filePath) || !is_readable($filePath)) {
@@ -18,13 +22,16 @@ class Parser
         $content = file_get_contents($filePath);
         $extension = pathinfo($filePath, PATHINFO_EXTENSION);
 
-        return match ($extension) {
-            'json' => self::parseJson($content, $filePath),
-            'yaml', 'yml' => self::parseYaml($content, $filePath),
-            default => throw new \Gendiff\Exceptions\UnsupportedFileFormatException(
-                "Неподдерживаемый формат файла: {$filePath}"
-            ),
-        };
+        if (!in_array($extension, Constants::SUPPORTED_EXTENSIONS, true)) {
+            throw new UnsupportedFileFormatException(
+                "Неподдерживаемый формат файла: {$filePath}. Поддерживаются: "
+                    . implode(', ', Constants::SUPPORTED_EXTENSIONS)
+            );
+        }
+
+        return $extension === self::JSON_EXTENSION
+            ? self::parseJson($content, $filePath)
+            : self::parseYaml($content, $filePath);
     }
 
     private static function parseJson(string $content, string $filePath): array

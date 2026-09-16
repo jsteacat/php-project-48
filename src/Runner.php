@@ -2,6 +2,8 @@
 
 namespace Gendiff;
 
+use Gendiff\Constants;
+
 class Runner
 {
     private const string VERSION = '1.0.0';
@@ -24,12 +26,12 @@ DOC;
      * Разбирает аргументы командной строки и запускает сравнение файлов.
      *
      * @param string[] $argv Аргументы в формате $_SERVER['argv'] — с именем скрипта в начале.
-     * @param resource $stdout Поток для основного вывода.
+     * @param false|resource $stdout Поток для основного вывода.
      * @param resource $stderr Поток для сообщений об ошибках.
      *
      * @return int Код возврата процесса: 0 — успех, 1 — ошибка.
      */
-    public static function run(array $argv, $stdout = STDOUT, $stderr = STDERR): int
+    public static function run(array $argv, false $stdout = STDOUT, $stderr = STDERR): int
     {
         // help/version => false, чтобы docopt не завершал процесс сам (иначе падают тесты),
         // exit => false, чтобы разбор заканчивался возвратом Response, а не exit().
@@ -61,7 +63,7 @@ DOC;
         }
 
         // docopt возвращает значение опции массивом: ['--format' => ['stylish']].
-        $format = (string) ($data['--format'][0] ?? 'stylish');
+        $format = (string) ($data['--format'][0] ?? Constants::DEFAULT_FORMAT);
         $firstFilePath = (string) $data['<firstFile>'];
         $secondFilePath = (string) $data['<secondFile>'];
 
