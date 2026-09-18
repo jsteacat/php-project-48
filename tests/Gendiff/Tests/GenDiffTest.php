@@ -2,6 +2,7 @@
 
 namespace Gendiff\Tests;
 
+use Gendiff\Exceptions\UnsupportedFormatException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -41,6 +42,14 @@ class GenDiffTest extends TestCase
             self::FIXTURES_DIR . '/file2.json',
             'stylish'
         ));
+    }
+
+    public function testUnknownOutputFormat(): void
+    {
+        $this->expectException(UnsupportedFormatException::class);
+        $this->expectExceptionMessage('Неподдерживаемый формат вывода: plain');
+
+        genDiff(self::FIXTURES_DIR . '/file1.json', self::FIXTURES_DIR . '/file2.json', 'plain');
     }
 
     /**

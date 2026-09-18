@@ -2,12 +2,12 @@
 
 namespace Gendiff\Formatters;
 
-use Gendiff\Constants;
+use Gendiff\NodeType;
 
 class StylishFormatter implements Formatter
 {
     /**
-     * @param array<int|string, array<string, mixed>> $diff
+     * @param array<int|string, array{type: NodeType, value?: mixed, oldValue?: mixed, newValue?: mixed}> $diff
      */
     public function format(array $diff): string
     {
@@ -23,21 +23,20 @@ class StylishFormatter implements Formatter
     }
 
     /**
-     * @param array<string, mixed> $node
+     * @param array{type: NodeType, value?: mixed, oldValue?: mixed, newValue?: mixed} $node
      *
      * @return string[]
      */
     private function renderNode(string $key, array $node): array
     {
         return match ($node['type']) {
-            Constants::NODE_UNCHANGED => [$this->renderLine('', $key, $node['value'] ?? null)],
-            Constants::NODE_CHANGED => [
+            NodeType::Unchanged => [$this->renderLine('', $key, $node['value'] ?? null)],
+            NodeType::Changed => [
                 $this->renderLine('- ', $key, $node['oldValue'] ?? null),
                 $this->renderLine('+ ', $key, $node['newValue'] ?? null),
             ],
-            Constants::NODE_REMOVED => [$this->renderLine('- ', $key, $node['value'] ?? null)],
-            Constants::NODE_ADDED => [$this->renderLine('+ ', $key, $node['value'] ?? null)],
-            default => throw new \InvalidArgumentException('Неизвестный тип узла: ' . (string) $node['type']),
+            NodeType::Removed => [$this->renderLine('- ', $key, $node['value'] ?? null)],
+            NodeType::Added => [$this->renderLine('+ ', $key, $node['value'] ?? null)],
         };
     }
 

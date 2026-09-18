@@ -3,10 +3,9 @@
 namespace Gendiff\Tests;
 
 use Gendiff\Formatters\StylishFormatter;
+use Gendiff\NodeType;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-
-use Gendiff\Constants;
 
 /**
  * Формат вывода тестируется отдельно от парсинга и разбора аргументов:
@@ -25,11 +24,11 @@ class StylishFormatterTest extends TestCase
     public function testAllNodeTypes(): void
     {
         $diff = [
-            'follow' => ['type' => Constants::NODE_REMOVED, 'value' => false],
-            'host' => ['type' => Constants::NODE_UNCHANGED, 'value' => 'hexlet.io'],
-            'proxy' => ['type' => Constants::NODE_REMOVED, 'value' => '123.234.53.22'],
-            'timeout' => ['type' => Constants::NODE_CHANGED, 'oldValue' => 50, 'newValue' => 20],
-            'verbose' => ['type' => Constants::NODE_ADDED, 'value' => true],
+            'follow' => ['type' => NodeType::Removed, 'value' => false],
+            'host' => ['type' => NodeType::Unchanged, 'value' => 'hexlet.io'],
+            'proxy' => ['type' => NodeType::Removed, 'value' => '123.234.53.22'],
+            'timeout' => ['type' => NodeType::Changed, 'oldValue' => 50, 'newValue' => 20],
+            'verbose' => ['type' => NodeType::Added, 'value' => true],
         ];
 
         $expected = <<<OUTPUT
@@ -54,7 +53,7 @@ OUTPUT;
     #[DataProvider('scalarProvider')]
     public function testRenderScalarValues(mixed $value, string $expected): void
     {
-        $diff = ['key' => ['type' => Constants::NODE_ADDED, 'value' => $value]];
+        $diff = ['key' => ['type' => NodeType::Added, 'value' => $value]];
 
         $this->assertSame("{\n  + key: {$expected}\n}", $this->formatDiff($diff));
     }
@@ -79,13 +78,16 @@ OUTPUT;
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Массивы не поддерживаются');
 
-        $this->formatDiff(['key' => ['type' => Constants::NODE_ADDED, 'value' => ['nested' => true]]]);
+        $this->formatDiff(['key' => ['type' => NodeType::Added, 'value' => ['nested' => true]]]);
     }
 
+    /**
+     * Все case'ы NodeType разобраны в match, поэтому неизвестный тип узла —
+     * это уже нарушение контракта, и PHP бросает UnhandledMatchError.
+     */
     public function testUnknownNodeType(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Неизвестный тип узла');
+        $this->expectException(\UnhandledMatchError::class);
 
         $this->formatDiff(['key' => ['type' => 'unknown', 'value' => 1]]);
     }

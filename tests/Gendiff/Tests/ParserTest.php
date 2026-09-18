@@ -63,6 +63,17 @@ class ParserTest extends TestCase
     }
 
     /**
+     * Сообщение об ошибке строится по списку расширений из FileFormat.
+     */
+    public function testUnsupportedFormatMessageListsSupportedExtensions(): void
+    {
+        $this->expectException(UnsupportedFileFormatException::class);
+        $this->expectExceptionMessage('Поддерживаются: json, yaml, yml');
+
+        Parser::parse(self::FIXTURES_DIR . '/unsupported.txt');
+    }
+
+    /**
      * @return array<string, array{0: string, 1: class-string<\Throwable>, 2: string}>
      */
     public static function brokenFilesProvider(): array

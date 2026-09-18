@@ -72,15 +72,21 @@ use function Gendiff\genDiff;
 
 // третий аргумент — формат вывода, по умолчанию stylish
 $diff = genDiff('path/to/file1.json', 'path/to/file2.json');
+$diff = genDiff('path/to/file1.json', 'path/to/file2.json', 'stylish');
 echo $diff;
 ```
+
+Внутри формат описан enum'ом `Gendiff\OutputFormat`: строка из аргументов приводится к enum'у
+на входе, а неизвестный формат — исключение `UnsupportedFormatException`.
 
 ## Структура проекта
 
 ```
 bin/gendiff           — CLI-входная точка
 src/functions.php     — публичное API: genDiff(), сборка diff, выбор форматтера
-src/Constants.php     — форматы вывода, поддерживаемые расширения, типы узлов diff
+src/NodeType.php      — типы узлов diff (enum)
+src/OutputFormat.php  — форматы вывода (enum)
+src/FileFormat.php    — форматы файлов на входе: json / yaml / yml (enum)
 src/Parser.php        — чтение json / yaml / yml
 src/Runner.php        — разбор аргументов и вывод результата
 src/Formatters/       — форматы вывода: каждый вариант — отдельный класс
@@ -89,8 +95,10 @@ tests/                — PHPUnit-тесты, tests/fixtures — фикстур�
 ```
 
 Сравнение и вывод разделены: `buildDiff()` собирает различия в промежуточное представление,
-а форматтер превращает их в текст. Чтобы добавить формат (`plain`, `json`), достаточно
-нового класса в `src/Formatters` и ветки в `createFormatter()`.
+а форматтер превращает их в текст. Закрытые наборы значений описаны enum'ами: `NodeType`
+(типы узлов diff), `OutputFormat` (форматы вывода), `FileFormat` (форматы файлов на входе).
+Чтобы добавить формат (`plain`, `json`), достаточно нового класса в `src/Formatters`,
+нового case в `OutputFormat` и ветки в `createFormatter()`.
 
 ## Разработка
 
