@@ -7,7 +7,6 @@
 # IDE
 /.idea/
 /.vscode/
-/.gigacode/
 *.swp
 *.swo
 *~
