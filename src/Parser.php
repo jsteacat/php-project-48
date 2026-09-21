@@ -18,7 +18,6 @@ class Parser
             );
         }
 
-        $content = file_get_contents($filePath);
         $format = FileFormat::tryFrom(pathinfo($filePath, PATHINFO_EXTENSION));
 
         if ($format === null) {
@@ -27,6 +26,8 @@ class Parser
                     . implode(', ', FileFormat::extensions())
             );
         }
+
+        $content = file_get_contents($filePath);
 
         return match ($format) {
             FileFormat::Json => self::parseJson($content, $filePath),
