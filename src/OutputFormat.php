@@ -24,6 +24,6 @@ enum OutputFormat: string
     public static function fromString(string $format): self
     {
         return self::tryFrom($format)
-            ?? throw new UnsupportedFormatException("Неподдерживаемый формат вывода: {$format}");
+            ?? throw new UnsupportedFormatException("Неподдерживаемый формат вывода: $format");
     }
 }
