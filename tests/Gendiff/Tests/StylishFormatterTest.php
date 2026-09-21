@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gendiff\Tests;
 
 use Gendiff\Formatters\StylishFormatter;
