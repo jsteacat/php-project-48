@@ -11,14 +11,16 @@ use PHPUnit\Framework\TestCase;
 use function Gendiff\genDiff;
 
 /**
- * Тесты публичного API библиотеки: функция genDiff сравнивает плоские файлы.
+ * Тесты публичного API библиотеки: функция genDiff сравнивает вложенные файлы.
+ * Тесты на вложенных структурах полностью покрывают плоские,
+ * поэтому плоские файлы здесь отдельно не проверяются.
  */
 class GenDiffTest extends TestCase
 {
     private const FIXTURES_DIR = __DIR__ . '/../../fixtures';
 
-    #[DataProvider('flatFilesProvider')]
-    public function testComparisonOfFlatFiles(string $first, string $second): void
+    #[DataProvider('nestedFilesProvider')]
+    public function testComparisonOfNestedFiles(string $first, string $second): void
     {
         $this->assertSame($this->expectedStylish(), genDiff(
             self::FIXTURES_DIR . '/' . $first,
@@ -29,7 +31,7 @@ class GenDiffTest extends TestCase
     /**
      * @return array<string, array{0: string, 1: string}>
      */
-    public static function flatFilesProvider(): array
+    public static function nestedFilesProvider(): array
     {
         return [
             'json' => ['file1.json', 'file2.json'],

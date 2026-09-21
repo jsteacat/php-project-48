@@ -39,7 +39,7 @@ class CliTest extends TestCase
         return [$stdout, $stderr, proc_close($process)];
     }
 
-    public function testDiffOfFlatJsonFiles(): void
+    public function testDiffOfNestedJsonFiles(): void
     {
         [$stdout, $stderr, $exitCode] = $this->runCli([
             self::FIXTURES_DIR . '/file1.json',

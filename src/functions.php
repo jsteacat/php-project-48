@@ -30,10 +30,16 @@ function genDiff(
  * Собирает различия в промежуточное представление: ключ => узел.
  * Формат вывода на этом шаге не важен: узлы получает форматтер.
  *
+ * Если значения по ключу в обоих массивах — ассоциативные массивы,
+ * ключ превращается во вложенный узел (Nested) с детьми, построенными
+ * рекурсивно. Иначе значения никак не анализируются и хранятся как есть:
+ * их форматирование — ответственность форматтера.
+ *
  * @param array<int|string, mixed> $first
  * @param array<int|string, mixed> $second
  *
- * @return array<int|string, array{type: NodeType, value?: mixed, oldValue?: mixed, newValue?: mixed}>
+ * @return array<int|string, array{type: NodeType, value?: mixed, oldValue?: mixed, newValue?: mixed,
+ *     children?: array<int|string, mixed>}>
  */
 function buildDiff(array $first, array $second): array
 {
@@ -47,14 +53,21 @@ function buildDiff(array $first, array $second): array
         $inFirst = array_key_exists($key, $first);
         $inSecond = array_key_exists($key, $second);
 
-        if ($inFirst && $inSecond && $first[$key] === $second[$key]) {
-            $diff[$key] = ['type' => NodeType::Unchanged, 'value' => $first[$key]];
-        } elseif ($inFirst && $inSecond) {
-            $diff[$key] = [
-                'type' => NodeType::Changed,
-                'oldValue' => $first[$key],
-                'newValue' => $second[$key],
-            ];
+        if ($inFirst && $inSecond) {
+            $firstValue = $first[$key];
+            $secondValue = $second[$key];
+
+            if (isAssocArray($firstValue) && isAssocArray($secondValue)) {
+                $diff[$key] = ['type' => NodeType::Nested, 'children' => buildDiff($firstValue, $secondValue)];
+            } elseif ($firstValue === $secondValue) {
+                $diff[$key] = ['type' => NodeType::Unchanged, 'value' => $firstValue];
+            } else {
+                $diff[$key] = [
+                    'type' => NodeType::Changed,
+                    'oldValue' => $firstValue,
+                    'newValue' => $secondValue,
+                ];
+            }
         } elseif ($inFirst) {
             $diff[$key] = ['type' => NodeType::Removed, 'value' => $first[$key]];
         } else {
@@ -63,6 +76,15 @@ function buildDiff(array $first, array $second): array
     }
 
     return $diff;
+}
+
+/**
+ * Проверяет, что значение — ассоциативный массив (объект в JSON/YAML),
+ * а не обычный список: дети строятся только в этом случае.
+ */
+function isAssocArray(mixed $value): bool
+{
+    return is_array($value) && !array_is_list($value);
 }
 
 /**

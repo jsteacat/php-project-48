@@ -15,4 +15,5 @@ enum NodeType: string
     case Removed = 'removed';
     case Added = 'added';
     case Changed = 'changed';
+    case Nested = 'nested';
 }

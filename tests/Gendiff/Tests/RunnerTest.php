@@ -48,8 +48,8 @@ class RunnerTest extends TestCase
         return (string) file_get_contents(self::EXPECTED_DIFF);
     }
 
-    #[DataProvider('flatFilesProvider')]
-    public function testDiffOfFlatFiles(string $first, string $second): void
+    #[DataProvider('nestedFilesProvider')]
+    public function testDiffOfNestedFiles(string $first, string $second): void
     {
         [$stdout, $stderr, $exitCode] = $this->execute([
             self::FIXTURES_DIR . '/' . $first,
@@ -64,7 +64,7 @@ class RunnerTest extends TestCase
     /**
      * @return array<string, array{0: string, 1: string}>
      */
-    public static function flatFilesProvider(): array
+    public static function nestedFilesProvider(): array
     {
         return [
             'json' => ['file1.json', 'file2.json'],

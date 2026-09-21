@@ -36,7 +36,7 @@ class StylishFormatterTest extends TestCase
         $expected = <<<OUTPUT
 {
   - follow: false
-  host: hexlet.io
+    host: hexlet.io
   - proxy: 123.234.53.22
   - timeout: 50
   + timeout: 20
@@ -75,12 +75,71 @@ OUTPUT;
         ];
     }
 
-    public function testArrayValueIsNotSupported(): void
+    /**
+     * Побеждает рекурсия: вложенный узел рисуется с отступом по глубине,
+     * а значение-массив у добавленного ключа — блоком без маркеров внутри.
+     */
+    public function testNestedDiff(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Массивы не поддерживаются');
+        $diff = [
+            'common' => [
+                'type' => NodeType::Nested,
+                'children' => [
+                    'setting1' => ['type' => NodeType::Unchanged, 'value' => 'Value 1'],
+                    'setting2' => ['type' => NodeType::Removed, 'value' => 200],
+                    'setting5' => [
+                        'type' => NodeType::Added,
+                        'value' => ['key5' => 'value5'],
+                    ],
+                ],
+            ],
+            'group2' => [
+                'type' => NodeType::Removed,
+                'value' => ['abc' => 12345, 'deep' => ['id' => 45]],
+            ],
+        ];
 
-        $this->formatDiff(['key' => ['type' => NodeType::Added, 'value' => ['nested' => true]]]);
+        $expected = <<<'OUTPUT'
+            {
+                common: {
+                    setting1: Value 1
+                  - setting2: 200
+                  + setting5: {
+                        key5: value5
+                    }
+                }
+              - group2: {
+                    abc: 12345
+                    deep: {
+                        id: 45
+                    }
+                }
+            }
+            OUTPUT;
+
+        $this->assertSame($expected, $this->formatDiff($diff));
+    }
+
+    public function testChangedNodeWithArrayValue(): void
+    {
+        $diff = [
+            'nest' => [
+                'type' => NodeType::Changed,
+                'oldValue' => ['key' => 'value'],
+                'newValue' => 'str',
+            ],
+        ];
+
+        $expected = <<<'OUTPUT'
+            {
+              - nest: {
+                    key: value
+                }
+              + nest: str
+            }
+            OUTPUT;
+
+        $this->assertSame($expected, $this->formatDiff($diff));
     }
 
     /**
