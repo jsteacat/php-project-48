@@ -54,14 +54,55 @@ composer install
 
 ```
 {
-  - follow: false
-  host: hexlet.io
-  - proxy: 123.234.53.22
-  - timeout: 50
-  + timeout: 20
-  + verbose: true
+    common: {
+      + follow: false
+        setting1: Value 1
+      - setting2: 200
+      - setting3: true
+      + setting3: null
+      + setting4: blah blah
+      + setting5: {
+            key5: value5
+        }
+        setting6: {
+            doge: {
+              - wow: 
+              + wow: so much
+            }
+            key: value
+          + ops: vops
+        }
+    }
+    group1: {
+      - baz: bas
+      + baz: bars
+        foo: bar
+      - nest: {
+            key: value
+        }
+      + nest: str
+    }
+  - group2: {
+        abc: 12345
+        deep: {
+            id: 45
+        }
+    }
+  + group3: {
+        deep: {
+            id: {
+                number: 45
+            }
+        }
+        fee: 100500
+    }
 }
 ```
+
+Вложенные объекты сравниваются рекурсивно: если значения по ключу — объекты
+в обоих файлах, их различия разбираются по детям; иначе значения выводятся
+как есть, а значение-объект у добавленного/удалённого/изменённого ключа
+рисуется блоком без маркеров внутри.
 
 Если файл не найден, его формат не поддерживается или содержимое повреждено, сообщение об ошибке выводится в поток ошибок (`stderr`), а код возврата процесса равен `1`.
 
