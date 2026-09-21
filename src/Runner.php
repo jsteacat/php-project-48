@@ -30,12 +30,12 @@ DOC;
      * Разбирает аргументы командной строки и запускает сравнение файлов.
      *
      * @param string[] $argv Аргументы в формате $_SERVER['argv'] — с именем скрипта в начале.
-     * @param resource $stdout Поток для основного вывода.
-     * @param resource $stderr Поток для сообщений об ошибках.
+     * @param mixed $stdout Поток для основного вывода.
+     * @param mixed $stderr Поток для сообщений об ошибках.
      *
      * @return int Код возврата процесса: 0 — успех, 1 — ошибка.
      */
-    public static function run(array $argv, $stdout = STDOUT, $stderr = STDERR): int
+    public static function run(array $argv, mixed $stdout = STDOUT, mixed $stderr = STDERR): int
     {
         $doc = str_replace('{default}', OutputFormat::Stylish->value, self::DOC_TEMPLATE);
 
