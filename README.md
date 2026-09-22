@@ -8,6 +8,10 @@
 Учебный проект Хекслета: https://ru.hexlet.io/programs/php
 Как это должно работать: https://asciinema.org/a/Pe6QypnLEmFWssNAjCOJN1iii
 
+Пример работы пакета:
+
+[![asciicast](https://asciinema.org/a/Pe6QypnLEmFWssNAjCOJN1iii.svg)](https://asciinema.org/a/Pe6QypnLEmFWssNAjCOJN1iii)
+
 ## Стек
 
 - PHP >= 8.4
@@ -48,11 +52,14 @@ composer install
 | `-v`, `--version`          | Показать версию                                       |
 | `-f <fmt>`, `--format <fmt>` | Формат вывода, по умолчанию `stylish`               |
 
-Поддерживаются файлы в форматах `.json`, `.yaml` и `.yml`. Форматы вывода: `stylish` (по умолчанию) и `plain`: неизвестный формат — это ошибка с кодом возврата `1`.
+Поддерживаются файлы в форматах `.json`, `.yaml` и `.yml`. Форматы вывода: `stylish` (по умолчанию), `plain` и `json`: неизвестный формат — это ошибка с кодом возврата `1`.
 
 ```bash
 # Плоский формат
 ./bin/gendiff --format plain tests/fixtures/file1.json tests/fixtures/file2.json
+
+# JSON-представление diff
+./bin/gendiff --format json tests/fixtures/file1.json tests/fixtures/file2.json
 ```
 
 Пример вывода в формате `plain`:
@@ -75,6 +82,35 @@ Property 'group3' was added with value: [complex value]
 вложенные ключи — полным путём от корня через точку, составные значения —
 как `[complex value]`, строковые — в одинарных кавычках, числа, `true`,
 `false` и `null` — как есть.
+
+Пример вывода в формате `json` (промежуточное представление diff):
+
+```json
+{
+    "common": {
+        "type": "nested",
+        "children": {
+            "follow": {
+                "type": "added",
+                "value": false
+            },
+            "setting3": {
+                "type": "changed",
+                "oldValue": true,
+                "newValue": null
+            }
+        }
+    },
+    "group2": {
+        "type": "removed",
+        "value": {
+            "abc": 12345
+        }
+    }
+}
+```
+
+Полный вывод для вложенных фикстур — в `tests/fixtures/expected/json.txt`.
 
 Пример вывода в формате `stylish`:
 
@@ -141,6 +177,7 @@ use function Gendiff\genDiff;
 $diff = genDiff('path/to/file1.json', 'path/to/file2.json');
 $diff = genDiff('path/to/file1.json', 'path/to/file2.json', 'stylish');
 $diff = genDiff('path/to/file1.json', 'path/to/file2.json', 'plain');
+$diff = genDiff('path/to/file1.json', 'path/to/file2.json', 'json');
 echo $diff;
 ```
 
@@ -165,8 +202,8 @@ tests/                — PHPUnit-тесты, tests/fixtures — фикстур�
 Сравнение и вывод разделены: `buildDiff()` собирает различия в промежуточное представление,
 а форматтер превращает их в текст. Закрытые наборы значений описаны enum'ами: `NodeType`
 (типы узлов diff), `OutputFormat` (форматы вывода), `FileFormat` (форматы файлов на входе).
-Чтобы добавить формат (`json`), достаточно нового класса в `src/Formatters`,
-нового case в `OutputFormat` и ветки в `createFormatter()`.
+Форматы вывода: `stylish` — дерево с маркерами, `plain` — только изменения плоским списком,
+`json` — JSON промежуточного представления.
 
 ## Разработка
 

@@ -16,6 +16,7 @@ enum OutputFormat: string
 {
     case Stylish = 'stylish';
     case Plain = 'plain';
+    case Json = 'json';
 
     /**
      * Приводит строку из CLI или публичного API к формату вывода.

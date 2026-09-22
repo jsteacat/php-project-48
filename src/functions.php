@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Gendiff;
 
 use Gendiff\Formatters\Formatter;
+use Gendiff\Formatters\JsonFormatter;
 use Gendiff\Formatters\PlainFormatter;
 use Gendiff\Formatters\StylishFormatter;
 
@@ -96,5 +97,6 @@ function createFormatter(OutputFormat $format): Formatter
     return match ($format) {
         OutputFormat::Stylish => new StylishFormatter(),
         OutputFormat::Plain => new PlainFormatter(),
+        OutputFormat::Json => new JsonFormatter(),
     };
 }

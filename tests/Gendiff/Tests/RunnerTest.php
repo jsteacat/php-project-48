@@ -10,8 +10,8 @@ use PHPUnit\Framework\TestCase;
 
 class RunnerTest extends TestCase
 {
-    private const FIXTURES_DIR = __DIR__ . '/../../fixtures';
-    private const EXPECTED_DIFF = self::FIXTURES_DIR . '/expected/stylish.txt';
+    private const string FIXTURES_DIR = __DIR__ . '/../../fixtures';
+    private const string EXPECTED_DIFF = self::FIXTURES_DIR . '/expected/stylish.txt';
 
     /**
      * Запускает Runner в текущем процессе, подменяя потоки вывода на in-memory.
@@ -51,6 +51,11 @@ class RunnerTest extends TestCase
     private function expectedPlain(): string
     {
         return (string) file_get_contents(self::FIXTURES_DIR . '/expected/plain.txt');
+    }
+
+    private function expectedJson(): string
+    {
+        return (string) file_get_contents(self::FIXTURES_DIR . '/expected/json.txt');
     }
 
     #[DataProvider('nestedFilesProvider')]
@@ -115,6 +120,20 @@ class RunnerTest extends TestCase
 
         $this->assertSame(0, $exitCode);
         $this->assertSame($this->expectedPlain(), $stdout);
+        $this->assertSame('', $stderr);
+    }
+
+    public function testJsonFormatOption(): void
+    {
+        [$stdout, $stderr, $exitCode] = $this->execute([
+            '--format',
+            'json',
+            self::FIXTURES_DIR . '/file1.json',
+            self::FIXTURES_DIR . '/file2.json',
+        ]);
+
+        $this->assertSame(0, $exitCode);
+        $this->assertSame($this->expectedJson(), $stdout);
         $this->assertSame('', $stderr);
     }
 

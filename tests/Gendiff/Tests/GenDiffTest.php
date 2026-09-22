@@ -58,6 +58,16 @@ class GenDiffTest extends TestCase
         ));
     }
 
+    #[DataProvider('nestedFilesProvider')]
+    public function testJsonFormat(string $first, string $second): void
+    {
+        $this->assertSame($this->expectedJson(), genDiff(
+            self::FIXTURES_DIR . '/' . $first,
+            self::FIXTURES_DIR . '/' . $second,
+            'json'
+        ));
+    }
+
     public function testUnknownOutputFormat(): void
     {
         $this->expectException(UnsupportedFormatException::class);
@@ -77,5 +87,10 @@ class GenDiffTest extends TestCase
     private function expectedPlain(): string
     {
         return rtrim((string) file_get_contents(self::FIXTURES_DIR . '/expected/plain.txt'));
+    }
+
+    private function expectedJson(): string
+    {
+        return rtrim((string) file_get_contents(self::FIXTURES_DIR . '/expected/json.txt'));
     }
 }
