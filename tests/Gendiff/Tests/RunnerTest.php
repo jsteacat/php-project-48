@@ -48,6 +48,11 @@ class RunnerTest extends TestCase
         return (string) file_get_contents(self::EXPECTED_DIFF);
     }
 
+    private function expectedPlain(): string
+    {
+        return (string) file_get_contents(self::FIXTURES_DIR . '/expected/plain.txt');
+    }
+
     #[DataProvider('nestedFilesProvider')]
     public function testDiffOfNestedFiles(string $first, string $second): void
     {
@@ -97,6 +102,20 @@ class RunnerTest extends TestCase
             'short' => [['-f', 'stylish']],
             'long' => [['--format', 'stylish']],
         ];
+    }
+
+    public function testPlainFormatOption(): void
+    {
+        [$stdout, $stderr, $exitCode] = $this->execute([
+            '--format',
+            'plain',
+            self::FIXTURES_DIR . '/file1.json',
+            self::FIXTURES_DIR . '/file2.json',
+        ]);
+
+        $this->assertSame(0, $exitCode);
+        $this->assertSame($this->expectedPlain(), $stdout);
+        $this->assertSame('', $stderr);
     }
 
     public function testUnknownOutputFormat(): void

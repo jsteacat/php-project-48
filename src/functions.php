@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Gendiff;
 
 use Gendiff\Formatters\Formatter;
+use Gendiff\Formatters\PlainFormatter;
 use Gendiff\Formatters\StylishFormatter;
 
 /**
@@ -88,11 +89,12 @@ function isAssocArray(mixed $value): bool
 }
 
 /**
- * Выбирает форматтер вывода: новые форматы (plain, json) добавляются здесь.
+ * Выбирает форматтер вывода: новые форматы добавляются здесь.
  */
 function createFormatter(OutputFormat $format): Formatter
 {
     return match ($format) {
         OutputFormat::Stylish => new StylishFormatter(),
+        OutputFormat::Plain => new PlainFormatter(),
     };
 }

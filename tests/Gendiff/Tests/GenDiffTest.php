@@ -48,12 +48,22 @@ class GenDiffTest extends TestCase
         ));
     }
 
+    #[DataProvider('nestedFilesProvider')]
+    public function testPlainFormat(string $first, string $second): void
+    {
+        $this->assertSame($this->expectedPlain(), genDiff(
+            self::FIXTURES_DIR . '/' . $first,
+            self::FIXTURES_DIR . '/' . $second,
+            'plain'
+        ));
+    }
+
     public function testUnknownOutputFormat(): void
     {
         $this->expectException(UnsupportedFormatException::class);
-        $this->expectExceptionMessage('Неподдерживаемый формат вывода: plain');
+        $this->expectExceptionMessage('Неподдерживаемый формат вывода: unknown');
 
-        genDiff(self::FIXTURES_DIR . '/file1.json', self::FIXTURES_DIR . '/file2.json', 'plain');
+        genDiff(self::FIXTURES_DIR . '/file1.json', self::FIXTURES_DIR . '/file2.json', 'unknown');
     }
 
     /**
@@ -62,5 +72,10 @@ class GenDiffTest extends TestCase
     private function expectedStylish(): string
     {
         return rtrim((string) file_get_contents(self::FIXTURES_DIR . '/expected/stylish.txt'));
+    }
+
+    private function expectedPlain(): string
+    {
+        return rtrim((string) file_get_contents(self::FIXTURES_DIR . '/expected/plain.txt'));
     }
 }

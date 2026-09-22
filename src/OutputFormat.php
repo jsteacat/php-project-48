@@ -15,6 +15,7 @@ use Gendiff\Exceptions\UnsupportedFormatException;
 enum OutputFormat: string
 {
     case Stylish = 'stylish';
+    case Plain = 'plain';
 
     /**
      * Приводит строку из CLI или публичного API к формату вывода.

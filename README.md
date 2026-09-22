@@ -48,9 +48,35 @@ composer install
 | `-v`, `--version`          | Показать версию                                       |
 | `-f <fmt>`, `--format <fmt>` | Формат вывода, по умолчанию `stylish`               |
 
-Поддерживаются файлы в форматах `.json`, `.yaml` и `.yml`. Из форматов вывода пока реализован только `stylish`: неизвестный формат — это ошибка с кодом возврата `1`.
+Поддерживаются файлы в форматах `.json`, `.yaml` и `.yml`. Форматы вывода: `stylish` (по умолчанию) и `plain`: неизвестный формат — это ошибка с кодом возврата `1`.
 
-Пример вывода:
+```bash
+# Плоский формат
+./bin/gendiff --format plain tests/fixtures/file1.json tests/fixtures/file2.json
+```
+
+Пример вывода в формате `plain`:
+
+```
+Property 'common.follow' was added with value: false
+Property 'common.setting2' was removed
+Property 'common.setting3' was updated. From true to null
+Property 'common.setting4' was added with value: 'blah blah'
+Property 'common.setting5' was added with value: [complex value]
+Property 'common.setting6.doge.wow' was updated. From '' to 'so much'
+Property 'common.setting6.ops' was added with value: 'vops'
+Property 'group1.baz' was updated. From 'bas' to 'bars'
+Property 'group1.nest' was updated. From [complex value] to 'str'
+Property 'group2' was removed
+Property 'group3' was added with value: [complex value]
+```
+
+В `plain` выводятся только изменения: без изменений строка не печатается,
+вложенные ключи — полным путём от корня через точку, составные значения —
+как `[complex value]`, строковые — в одинарных кавычках, числа, `true`,
+`false` и `null` — как есть.
+
+Пример вывода в формате `stylish`:
 
 ```
 {
@@ -114,6 +140,7 @@ use function Gendiff\genDiff;
 // третий аргумент — формат вывода, по умолчанию stylish
 $diff = genDiff('path/to/file1.json', 'path/to/file2.json');
 $diff = genDiff('path/to/file1.json', 'path/to/file2.json', 'stylish');
+$diff = genDiff('path/to/file1.json', 'path/to/file2.json', 'plain');
 echo $diff;
 ```
 
@@ -138,7 +165,7 @@ tests/                — PHPUnit-тесты, tests/fixtures — фикстур�
 Сравнение и вывод разделены: `buildDiff()` собирает различия в промежуточное представление,
 а форматтер превращает их в текст. Закрытые наборы значений описаны enum'ами: `NodeType`
 (типы узлов diff), `OutputFormat` (форматы вывода), `FileFormat` (форматы файлов на входе).
-Чтобы добавить формат (`plain`, `json`), достаточно нового класса в `src/Formatters`,
+Чтобы добавить формат (`json`), достаточно нового класса в `src/Formatters`,
 нового case в `OutputFormat` и ветки в `createFormatter()`.
 
 ## Разработка
