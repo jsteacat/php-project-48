@@ -5,9 +5,9 @@
         "bin/gendiff"
     ],
     "require": {
-        "php": ">=8.4",
+        "php": ">=8.3",
         "docopt/docopt": "^1.0",
-        "symfony/yaml": "^8.1"
+        "symfony/yaml": "^7.4 || ^8.1"
     },
     "license": "MIT",
     "autoload": {
@@ -27,6 +27,6 @@
     "require-dev": {
         "phpstan/phpstan": "^2.2",
         "squizlabs/php_codesniffer": "^4.0",
-        "phpunit/phpunit": "^13.3"
+        "phpunit/phpunit": "^12.5 || ^13.3"
     }
 }
