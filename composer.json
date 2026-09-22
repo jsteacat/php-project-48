@@ -15,7 +15,8 @@
             "Gendiff\\": "src/"
         },
         "files": [
-            "src/functions.php"
+            "src/functions.php",
+            "src/Differ.php"
         ]
     },
     "authors": [
