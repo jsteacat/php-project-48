@@ -37,26 +37,35 @@ class PlainFormatter implements Formatter
 
             $lines = match ($node['type']) {
                 NodeType::Unchanged => $lines,
-                NodeType::Nested => array_merge(
-                    $lines,
-                    $this->renderNodes($node['children'] ?? [], $path)
-                ),
-                NodeType::Added => [
-                    ...$lines,
-                    "Property '{$path}' was added with value: " . $this->renderValue($node['value'] ?? null),
-                ],
-                NodeType::Removed => [...$lines, "Property '{$path}' was removed"],
+                NodeType::Nested => [...$lines, ...$this->renderNodes($node['children'] ?? [], $path)],
+                NodeType::Added => [...$lines, $this->renderAdded($path, $node['value'] ?? null)],
+                NodeType::Removed => [...$lines, $this->renderRemoved($path)],
                 NodeType::Changed => [
                     ...$lines,
-                    "Property '{$path}' was updated. From "
-                        . $this->renderValue($node['oldValue'] ?? null)
-                        . ' to '
-                        . $this->renderValue($node['newValue'] ?? null),
+                    $this->renderChanged($path, $node['oldValue'] ?? null, $node['newValue'] ?? null),
                 ],
             };
         }
 
         return $lines;
+    }
+
+    private function renderAdded(string $path, mixed $value): string
+    {
+        return "Property '{$path}' was added with value: " . $this->renderValue($value);
+    }
+
+    private function renderRemoved(string $path): string
+    {
+        return "Property '{$path}' was removed";
+    }
+
+    private function renderChanged(string $path, mixed $oldValue, mixed $newValue): string
+    {
+        return "Property '{$path}' was updated. From "
+            . $this->renderValue($oldValue)
+            . ' to '
+            . $this->renderValue($newValue);
     }
 
     /**
