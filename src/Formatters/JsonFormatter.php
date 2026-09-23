@@ -20,10 +20,8 @@ class JsonFormatter implements Formatter
      */
     public function format(array $diff): string
     {
-        $payload = $diff === [] ? [] : $diff;
-
         $json = json_encode(
-            $payload,
+            $diff,
             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
         );
 
