@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Gendiff;
 
+use Gendiff\Exceptions\UnsupportedFormatException;
 use Gendiff\Formatters\Formatter;
 use Gendiff\Formatters\JsonFormatter;
 use Gendiff\Formatters\PlainFormatter;
@@ -13,14 +14,21 @@ use Gendiff\Formatters\StylishFormatter;
  * Сравнивает два файла и возвращает их различия в выбранном формате вывода.
  *
  * Формат приходит строкой — так его передают из CLI и по спецификации API —
- * и сразу приводится к enum'у OutputFormat.
+ * и сразу приводится к enum'у OutputFormat. Неизвестный формат — ошибка уровня API:
+ * enum отвечает только за сопоставление, поэтому проверка и исключение живут здесь.
+ *
+ * @throws UnsupportedFormatException если формат не поддерживается
  */
 function genDiff(
     string $firstFilePath,
     string $secondFilePath,
     string $format = OutputFormat::Stylish->value
 ): string {
-    $outputFormat = OutputFormat::fromString($format);
+    $outputFormat = OutputFormat::tryFrom($format);
+
+    if ($outputFormat === null) {
+        throw UnsupportedFormatException::forFormat($format);
+    }
 
     $firstData = Parser::parse($firstFilePath);
     $secondData = Parser::parse($secondFilePath);
