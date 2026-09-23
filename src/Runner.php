@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Gendiff;
 
+use Docopt;
+use Throwable;
+
 class Runner
 {
     private const string VERSION = '1.0.0';
@@ -41,7 +44,7 @@ DOC;
 
         // help/version => false, чтобы docopt не завершал процесс сам (иначе падают тесты),
         // exit => false, чтобы разбор заканчивался возвратом Response, а не exit().
-        $response = \Docopt::handle($doc, [
+        $response = Docopt::handle($doc, [
             'argv' => array_slice($argv, 1),
             'help' => false,
             'version' => false,
@@ -77,7 +80,7 @@ DOC;
             fwrite($stdout, genDiff($firstFilePath, $secondFilePath, $format) . PHP_EOL);
 
             return 0;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             fwrite($stderr, $e->getMessage() . PHP_EOL);
 
             return 1;

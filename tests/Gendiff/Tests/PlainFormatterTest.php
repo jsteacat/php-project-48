@@ -8,6 +8,7 @@ use Gendiff\Formatters\PlainFormatter;
 use Gendiff\NodeType;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use UnhandledMatchError;
 
 /**
  * Плоский формат проверяется отдельно от парсинга:
@@ -149,7 +150,7 @@ class PlainFormatterTest extends TestCase
 
     public function testUnknownNodeType(): void
     {
-        $this->expectException(\UnhandledMatchError::class);
+        $this->expectException(UnhandledMatchError::class);
 
         $this->formatDiff(['key' => ['type' => 'unknown', 'value' => 1]]);
     }

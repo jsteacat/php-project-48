@@ -6,8 +6,10 @@ namespace Gendiff\Tests;
 
 use Gendiff\Exceptions\UnsupportedFileFormatException;
 use Gendiff\Parser;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Throwable;
 
 class ParserTest extends TestCase
 {
@@ -75,7 +77,7 @@ class ParserTest extends TestCase
     }
 
     /**
-     * @param class-string<\Throwable> $exceptionClass
+     * @param class-string<Throwable> $exceptionClass
      */
     #[DataProvider('brokenFilesProvider')]
     public function testParseBrokenFile(string $fileName, string $exceptionClass, string $message): void
@@ -98,17 +100,17 @@ class ParserTest extends TestCase
     }
 
     /**
-     * @return array<string, array{0: string, 1: class-string<\Throwable>, 2: string}>
+     * @return array<string, array{0: string, 1: class-string<Throwable>, 2: string}>
      */
     public static function brokenFilesProvider(): array
     {
         return [
-            'missing file' => ['missing.json', \InvalidArgumentException::class, '/Файл не найден или недоступен:/'],
-            'empty file' => ['empty.json', \InvalidArgumentException::class, '/Пустой файл:/'],
-            'invalid json' => ['invalid.json', \InvalidArgumentException::class, '/Ошибка JSON в файле/'],
-            'invalid yaml' => ['invalid.yaml', \InvalidArgumentException::class, '/Ошибка YAML в файле/'],
-            'json scalar' => ['scalar.json', \InvalidArgumentException::class, '/Ожидается объект или массив JSON/'],
-            'yaml scalar' => ['scalar.yaml', \InvalidArgumentException::class, '/Ожидается объект или массив YAML/'],
+            'missing file' => ['missing.json', InvalidArgumentException::class, '/Файл не найден или недоступен:/'],
+            'empty file' => ['empty.json', InvalidArgumentException::class, '/Пустой файл:/'],
+            'invalid json' => ['invalid.json', InvalidArgumentException::class, '/Ошибка JSON в файле/'],
+            'invalid yaml' => ['invalid.yaml', InvalidArgumentException::class, '/Ошибка YAML в файле/'],
+            'json scalar' => ['scalar.json', InvalidArgumentException::class, '/Ожидается объект или массив JSON/'],
+            'yaml scalar' => ['scalar.yaml', InvalidArgumentException::class, '/Ожидается объект или массив YAML/'],
             'unsupported format' => [
                 'unsupported.txt',
                 UnsupportedFileFormatException::class,

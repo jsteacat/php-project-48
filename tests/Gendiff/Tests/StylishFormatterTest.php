@@ -8,6 +8,7 @@ use Gendiff\Formatters\StylishFormatter;
 use Gendiff\NodeType;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use UnhandledMatchError;
 
 /**
  * Формат вывода тестируется отдельно от парсинга и разбора аргументов:
@@ -148,7 +149,7 @@ OUTPUT;
      */
     public function testUnknownNodeType(): void
     {
-        $this->expectException(\UnhandledMatchError::class);
+        $this->expectException(UnhandledMatchError::class);
 
         $this->formatDiff(['key' => ['type' => 'unknown', 'value' => 1]]);
     }
